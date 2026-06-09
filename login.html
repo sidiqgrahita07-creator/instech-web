@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0C3049">
+<meta name="description" content="Login Dashboard Instech — masuk untuk mengakses dashboard monitoring biokonversi.">
+<title>Login Dashboard — Instech</title>
+<link rel="icon" href="assets/logo-instech.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="tailwind-config.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-white text-navy font-sans antialiased">
+
+<div id="site-nav"></div>
+
+<section class="min-h-screen pt-32 pb-20 bg-gradient-to-br from-white via-white to-steel/10 grid place-items-center">
+  <div class="w-full max-w-md px-6" data-aos="fade-up">
+    <div class="bg-white rounded-3xl border border-navy/10 shadow-xl shadow-navy/10 p-8">
+      <div class="text-center mb-6">
+        <img src="assets/logo-instech.png" alt="Instech" class="h-11 mx-auto mb-4">
+        <h1 class="text-2xl font-black text-navy">Masuk ke Dashboard</h1>
+        <p class="text-sm text-navy/60 mt-1">Monitoring biokonversi Instech</p>
+      </div>
+
+      <!-- Notice kalau Firebase belum dikonfigurasi -->
+      <div id="setupNotice" class="hidden bg-cream border border-brown/20 rounded-xl p-4 text-sm text-navy/70 mb-4">
+        ⚙️ Login belum aktif. Admin perlu mengisi <code class="text-brown font-bold">firebase-config.js</code> terlebih dahulu.
+      </div>
+
+      <!-- Status (sudah login / sedang proses) -->
+      <div id="statusBox" class="hidden bg-steel/10 border border-steel/30 rounded-xl p-4 text-sm text-navy/75 mb-4 text-center"></div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold tracking-wider text-navy/60 mb-1">EMAIL</label>
+          <input id="email" type="email" required autocomplete="email"
+                 class="w-full px-4 py-3 bg-cream rounded-lg border border-transparent focus:border-steel focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-bold tracking-wider text-navy/60 mb-1">PASSWORD</label>
+          <input id="password" type="password" required autocomplete="current-password"
+                 class="w-full px-4 py-3 bg-cream rounded-lg border border-transparent focus:border-steel focus:outline-none">
+        </div>
+
+        <div id="errorMsg" class="hidden text-sm text-brown font-semibold bg-brown/10 rounded-lg px-3 py-2"></div>
+
+        <button id="loginBtn" type="submit" class="w-full bg-navy text-cream font-black py-4 rounded-xl hover:bg-steel transition disabled:opacity-50">
+          MASUK
+        </button>
+        <div class="text-center">
+          <a href="#" id="forgotLink" class="text-xs font-semibold text-steel hover:text-navy transition">Lupa password?</a>
+        </div>
+      </form>
+
+      <p class="text-center text-xs text-navy/45 mt-6">Akun dibuat oleh admin Instech. Hubungi admin jika belum punya akses.</p>
+    </div>
+    <p class="text-center text-xs text-navy/40 mt-5">← <a href="index.html" class="hover:text-steel">Kembali ke beranda</a></p>
+  </div>
+</section>
+
+<div id="site-footer"></div>
+<div id="site-bsf"></div>
+
+<!-- Firebase Auth -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function () {
+  const notice = document.getElementById('setupNotice');
+  const form = document.getElementById('loginForm');
+  const statusBox = document.getElementById('statusBox');
+  const errorMsg = document.getElementById('errorMsg');
+  const loginBtn = document.getElementById('loginBtn');
+
+  // Belum dikonfigurasi → tampilkan notice, matikan form
+  if (!window.firebaseConfig || String(firebaseConfig.apiKey).startsWith('GANTI')) {
+    notice.classList.remove('hidden');
+    form.querySelectorAll('input,button,a').forEach(el => { el.disabled = true; el.classList.add('opacity-50','pointer-events-none'); });
+    return;
+  }
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+
+  function showError(msg) { errorMsg.textContent = msg; errorMsg.classList.remove('hidden'); }
+  function clearError() { errorMsg.classList.add('hidden'); }
+  function mapError(code) {
+    switch (code) {
+      case 'auth/invalid-credential':
+      case 'auth/wrong-password':
+      case 'auth/user-not-found': return 'Email atau password salah.';
+      case 'auth/invalid-email':  return 'Format email tidak valid.';
+      case 'auth/user-disabled':  return 'Akun dinonaktifkan. Hubungi admin.';
+      case 'auth/too-many-requests': return 'Terlalu banyak percobaan. Coba lagi beberapa saat.';
+      case 'auth/network-request-failed': return 'Gangguan jaringan. Periksa koneksi.';
+      default: return 'Gagal masuk. ' + code;
+    }
+  }
+
+  // Sudah login → langsung arahkan ke dashboard
+  auth.onAuthStateChanged(function (user) {
+    if (user) {
+      form.classList.add('hidden');
+      statusBox.classList.remove('hidden');
+      statusBox.innerHTML = 'Sudah masuk sebagai <b>' + (user.email || 'pengguna') + '</b>.<br>Mengarahkan ke dashboard…';
+      setTimeout(function () { window.location.href = DASHBOARD_URL; }, 900);
+    }
+  });
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    clearError();
+    loginBtn.disabled = true; loginBtn.textContent = 'MEMPROSES…';
+    const email = document.getElementById('email').value.trim();
+    const pass = document.getElementById('password').value;
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(function () { /* onAuthStateChanged akan redirect */ })
+      .catch(function (err) {
+        showError(mapError(err.code || err.message));
+        loginBtn.disabled = false; loginBtn.textContent = 'MASUK';
+      });
+  });
+
+  document.getElementById('forgotLink').addEventListener('click', function (e) {
+    e.preventDefault();
+    clearError();
+    const email = document.getElementById('email').value.trim();
+    if (!email) { showError('Isi email dulu, lalu klik "Lupa password?".'); return; }
+    auth.sendPasswordResetEmail(email)
+      .then(function () {
+        statusBox.classList.remove('hidden');
+        statusBox.textContent = 'Link reset password sudah dikirim ke ' + email + '.';
+      })
+      .catch(function (err) { showError(mapError(err.code || err.message)); });
+  });
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="layout.js"></script>
+<script src="app.js"></script>
+<script>AOS.init({ duration: 700, once: true, offset: 60 });</script>
+</body>
+</html>

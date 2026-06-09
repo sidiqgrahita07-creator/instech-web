@@ -31,6 +31,7 @@
       { label: 'Bio Oil BSF',            href: 'produk-biooil.html',  icon: '💧' },
     ]},
     { label: 'FAQ', href: 'faq.html' },
+    { label: 'Dashboard', href: 'login.html' },
   ];
 
   // ─── Navbar desktop ───────────────────────────────────────────────────────
