@@ -80,7 +80,7 @@
   const loginBtn = document.getElementById('loginBtn');
 
   // Belum dikonfigurasi → tampilkan notice, matikan form
-  if (!window.firebaseConfig || String(firebaseConfig.apiKey).startsWith('GANTI')) {
+  if (typeof firebaseConfig === 'undefined' || String(firebaseConfig.apiKey).startsWith('GANTI')) {
     notice.classList.remove('hidden');
     form.querySelectorAll('input,button,a').forEach(el => { el.disabled = true; el.classList.add('opacity-50','pointer-events-none'); });
     return;
