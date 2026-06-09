@@ -1,29 +1,16 @@
 /*
-  ─────────────────────────────────────────────────────────────────────────────
-  KONFIGURASI FIREBASE — GANTI nilai di bawah dengan punya kamu.
-  ─────────────────────────────────────────────────────────────────────────────
-  Cara dapat:
-   1. Buka https://console.firebase.google.com → Add project (mis. "instech")
-   2. Authentication → Get started → tab "Sign-in method" → aktifkan
-      "Email/Password" → Save
-   3. Project settings (⚙️) → "Your apps" → klik ikon Web (</>) → daftarkan
-      app (mis. "instech-web") → SALIN object firebaseConfig → tempel di sini.
-   4. Authentication → Settings → Authorized domains → Add domain:
-      sidiqgrahita07-creator.github.io
-   5. Authentication → Users → Add user (buat akun untuk tiap orang yang boleh login)
-
-  CATATAN: nilai-nilai ini BUKAN rahasia — aman ada di kode publik. Keamanan
-  ditegakkan oleh Firebase (authorized domains + akun + rules), bukan oleh
-  menyembunyikan apiKey.
-  ─────────────────────────────────────────────────────────────────────────────
+  Konfigurasi Firebase — project "Dashboard Monitoring - Instech".
+  Nilai ini BUKAN rahasia (aman di repo publik). Keamanan ditegakkan oleh
+  Firebase: Authorized domains + akun + sign-in provider.
 */
 const firebaseConfig = {
-  apiKey: "GANTI_APIKEY",
-  authDomain: "GANTI_PROJECT.firebaseapp.com",
-  projectId: "GANTI_PROJECT",
-  storageBucket: "GANTI_PROJECT.appspot.com",
-  messagingSenderId: "GANTI_SENDERID",
-  appId: "GANTI_APPID"
+  apiKey: "AIzaSyAjMss-6kjiumWlV9b0zSb0zbngeWhZNYs",
+  authDomain: "dashboard-monitoring---instech.firebaseapp.com",
+  projectId: "dashboard-monitoring---instech",
+  storageBucket: "dashboard-monitoring---instech.firebasestorage.app",
+  messagingSenderId: "407393844797",
+  appId: "1:407393844797:web:f83b473acb962d246d3454",
+  measurementId: "G-6G4PMT2GYG"
 };
 
 // URL dashboard tujuan setelah login berhasil
